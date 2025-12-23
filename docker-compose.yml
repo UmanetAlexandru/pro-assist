@@ -1,0 +1,29 @@
+services:
+  proassist:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: proassist
+    restart: unless-stopped
+
+    ports:
+      - "8020:8020"
+
+    env_file:
+      - .env
+
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+
+      # Force SQLite to use the mounted persistent location
+      SPRING_DATASOURCE_URL: jdbc:sqlite:/data/app.db
+
+      # Base directory for photos/files if your app supports it (harmless if unused)
+      PROASSIST_DATA_DIR: /data
+
+      # API key (your filter should read from env or Spring property binding)
+      PROASSIST_API_KEY: ${PROASSIST_API_KEY}
+
+    volumes:
+      # IMPORTANT: on the server, set PROASSIST_HOST_DATA_DIR=/data/apps/pro-assist-data in .env
+      - ${PROASSIST_HOST_DATA_DIR}:/data:rw
