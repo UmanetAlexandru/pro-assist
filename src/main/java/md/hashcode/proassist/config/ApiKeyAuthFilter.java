@@ -12,26 +12,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
     private static final String HEADER = "X-API-Key";
-    private final Set<String> configuredKeys;
+    private final String configuredKey;
 
     public ApiKeyAuthFilter(org.springframework.core.env.Environment env) {
-        // IMPORTANT: property name must match your YAML: proassist.security.api-keys
-        String raw = env.getProperty("proassist.security.api-keys", "");
-        this.configuredKeys = Arrays.stream(raw.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isBlank())
-                .collect(Collectors.toUnmodifiableSet());
-
-        log.info("ApiKeyAuthFilter initialized. keysConfigured={}", this.configuredKeys.size());
+        // IMPORTANT: property name must match your YAML: proassist.security.api-key
+        String raw = env.getProperty("proassist.security.api-key", "");
+        log.warn("API Keys: {}", raw);
+        this.configuredKey = raw;
     }
 
     @Override
@@ -67,7 +60,8 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
                 return;
             }
 
-            boolean ok = configuredKeys.stream().anyMatch(k -> constantTimeEquals(k, provided));
+            log.warn("API Key: {} {}", method, provided);
+            boolean ok = constantTimeEquals(configuredKey, provided);
             if (!ok) {
                 log.warn("Invalid API key. {} {}", method, uri);
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid API key");

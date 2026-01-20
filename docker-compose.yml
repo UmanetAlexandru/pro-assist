@@ -25,5 +25,4 @@ services:
       PROASSIST_API_KEY: ${PROASSIST_API_KEY}
 
     volumes:
-      # IMPORTANT: on the server, set PROASSIST_HOST_DATA_DIR=/data/apps/pro-assist-data in .env
-      - ${PROASSIST_HOST_DATA_DIR}:/data:rw
+      - /data/apps/pro-assist-data:/data:rw

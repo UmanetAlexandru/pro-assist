@@ -34,13 +34,18 @@ public class PhoneStorageService {
     private final PhoneRecordRepository repo;
 
     public PhoneStorageService(StorageProperties props, ObjectMapper objectMapper, PhoneRecordRepository repo) {
-        this.phonesRoot = Path.of(props.basePath()).toAbsolutePath().normalize().resolve("phones");
+        Path absolutePath = Path.of(props.basePath()).toAbsolutePath();
+        this.phonesRoot = absolutePath.normalize().resolve("phones");
         this.objectMapper = objectMapper;
         this.repo = repo;
     }
 
     public PhoneRecordResponse get(String phoneKey) {
-        Path photosDir = phonesRoot.resolve(phoneKey).resolve("photos");
+        log.info("Phones path exist: {} -> {}", phonesRoot, Files.exists(phonesRoot));
+        Path resolve = phonesRoot.resolve(phoneKey);
+        log.info("{} path exist: {} -> {}", phoneKey, resolve, Files.exists(resolve));
+        Path photosDir = resolve.resolve("photos");
+        log.info("Photo dir exist: {} -> {}", photosDir, Files.exists(photosDir));
 
         var entityOpt = repo.findById(phoneKey);
 

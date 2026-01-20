@@ -3,7 +3,7 @@ server:
 
 proassist:
   security:
-    api-keys: ${PROASSIST_API_KEYS:change-me-now}
+    api-key: ${PROASSIST_API_KEY:change-me-now}
   storage:
     base-path: ${PROASSIST_STORAGE_BASE_PATH:./data}
 
